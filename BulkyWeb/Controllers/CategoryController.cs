@@ -1,6 +1,7 @@
 ﻿using BulkyWeb.Data;
 using BulkyWeb.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Reflection.Metadata;
 
 namespace BulkyWeb.Controllers
 {
@@ -38,12 +39,20 @@ namespace BulkyWeb.Controllers
         }
 
         // Post
-        [HttpPost]
+        [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public IActionResult Delete(Category obj)
+        public IActionResult DeletePost(int? id)
         {
+            var obj = _db.Categories.Find(id);
+
+            if (obj == null)
+            {
+                return NotFound();
+            }
+
             _db.Categories.Remove(obj);
             _db.SaveChanges();
+            TempData["success"] = "Category deleted successfully";
             return RedirectToAction("Index");
         }
 
@@ -79,6 +88,7 @@ namespace BulkyWeb.Controllers
             {
                 _db.Categories.Update(obj);
                 _db.SaveChanges();
+                TempData["success"] = "Category edited successfully";
                 return RedirectToAction("Index");
             }
             return View(obj);
@@ -104,6 +114,7 @@ namespace BulkyWeb.Controllers
             {
                 _db.Categories.Add(obj);
                 _db.SaveChanges();
+                TempData["success"] = "Category created successfully";
                 return RedirectToAction("Index");
             }
             return View(obj);
